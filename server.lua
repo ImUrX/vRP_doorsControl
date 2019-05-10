@@ -5,9 +5,12 @@
 local Tunnel = module("vrp", "lib/Tunnel")
 local Proxy = module("vrp", "lib/Proxy")
 vRP = Proxy.getInterface("vRP")
-vRPclient = Tunnel.getInterface("vRP", "doors")
+vRPclient = Tunnel.getInterface("vRP", "vRP_doorsControl")
 
-local cfg = module("doors", "config")
+local Lang = module("vrp", "lib/Lang")
+local cfg = module("vRP_doorsControl", "cfg/doors")
+
+local lang = Lang.new(module("vRP_doorsControl", "cfg/lang/"..cfg.lang) or {})
 
 AddEventHandler("vRP:playerSpawn",function(user_id,source,first_spawn)
   if first_spawn then
@@ -36,12 +39,12 @@ AddEventHandler('vrpdoorsystem:open', function(id)
         TriggerClientEvent('vrpdoorsystem:statusSend', (-1), idsecond,cfg.list[id].locked)
       end
       if cfg.list[id].locked then
-        vRPclient.notify(player, {"Дверь закрыта с помощью Ключа "..cfg.list[id].name})
+        vRPclient.notify(player, { lang.locked(lang.doors[cfg.list[id].name]()) })
       else
-        vRPclient.notify(player, {"Дверь открыта с помощью Ключа "..cfg.list[id].name})
+        vRPclient.notify(player, { lang.locked(lang.doors[cfg.list[id].name]()) })
       end
     end)
   else
-    vRPclient.notify(player, {"Отсутствует Ключ от дверей "..cfg.list[id].name})
+    vRPclient.notify(player, { lang.missing(lang.doors[cfg.list[id].name]()) })
   end
 end)
